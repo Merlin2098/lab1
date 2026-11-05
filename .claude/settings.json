@@ -1,0 +1,44 @@
+{
+  "defaultShell": "bash",
+  "env": {
+    "AWS_DEFAULT_REGION": "us-east-1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(uv sync:*)",
+      "Bash(uv run:*)",
+      "Bash(uv lock:*)",
+      "Bash(uv --version)",
+      "Bash(terraform version)",
+      "Bash(terraform fmt:*)",
+      "Bash(terraform validate:*)",
+      "Bash(terraform plan:*)",
+      "Bash(terraform output:*)",
+      "Bash(terraform state list:*)",
+      "Bash(terraform -chdir=infra init:*)",
+      "Bash(terraform -chdir=infra fmt:*)",
+      "Bash(terraform -chdir=infra validate:*)",
+      "Bash(terraform -chdir=infra plan:*)",
+      "Bash(terraform -chdir=infra output:*)",
+      "Bash(aws sts get-caller-identity:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git check-ignore:*)"
+    ],
+    "deny": [
+      "Bash(terraform apply:*)",
+      "Bash(terraform destroy:*)",
+      "Bash(terraform import:*)",
+      "Bash(terraform state rm:*)",
+      "Bash(terraform -chdir=infra apply:*)",
+      "Bash(terraform -chdir=infra destroy:*)",
+      "Bash(terraform -chdir=infra import:*)",
+      "Read(./.env)",
+      "Read(./.env.credentials)",
+      "Read(~/.aws/**)"
+    ]
+  }
+}

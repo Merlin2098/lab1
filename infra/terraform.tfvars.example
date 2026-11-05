@@ -1,0 +1,7 @@
+# OPCIONAL: el laboratorio funciona sin este archivo.
+# Úsalo solo si quieres cambiar un valor por defecto:
+#   cp infra/terraform.tfvars.example infra/terraform.tfvars
+# terraform.tfvars no se sube a Git. Aquí NUNCA van claves de acceso.
+
+# sufijo = "ab1234"      # por defecto: aleatorio de 6 caracteres
+# region = "us-east-1"

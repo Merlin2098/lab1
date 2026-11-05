@@ -1,0 +1,82 @@
+// Arquitectura del Laboratorio 1 — S3 → Lambda → Parquet (us-east-1).
+// Fuente de verdad: infra/ (un módulo por servicio). Este archivo es solo el
+// diagrama en código; renderízalo cuando lo necesites, por ejemplo:
+//   dot -Tsvg docs/architecture/architecture.dot -o architecture.svg
+//
+// Convenciones:
+//   - flechas sólidas: flujo de datos en tiempo de ejecución
+//   - flechas punteadas: permisos, configuración o despliegue
+//   - <sufijo>: sufijo aleatorio de 6 caracteres que genera Terraform
+
+digraph arquitectura {
+  graph [
+    rankdir=LR, fontname="Helvetica", pad=0.4,
+    nodesep=0.5, ranksep=0.8, newrank=true,
+    label="Laboratorio 1 · Tu primer ETL en AWS (us-east-1)", labelloc=t, fontsize=16
+  ];
+  node  [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled",
+         fillcolor="#FFFFFF", color="#141414", penwidth=1.2];
+  edge  [fontname="Helvetica", fontsize=10, color="#141414"];
+
+  // ---------- Fuera de AWS ----------
+  subgraph cluster_local {
+    label="Máquina del participante"; style="dashed,rounded"; color="#888888";
+    fontcolor="#555555";
+
+    muestra   [label="datos/muestra.json\n20 000 ventas · ~3,2 MB", shape=note,
+               fillcolor="#F4F1EE"];
+    terraform [label="Terraform\ninit · plan · apply · destroy", fillcolor="#F4F1EE"];
+    handler   [label="src/handler.py\n→ build/handler.zip (archive_file)",
+               shape=note, fillcolor="#F4F1EE"];
+  }
+
+  // ---------- Cuenta de AWS ----------
+  subgraph cluster_aws {
+    label="Cuenta de AWS · us-east-1"; style="rounded"; color="#141414";
+
+    subgraph cluster_s3 {
+      label="Amazon S3 · bootcamp-<sufijo>-datos\n(privado · SSE-S3 · sin versionado · force_destroy)";
+      style="rounded,filled"; fillcolor="#F4F1EE"; color="#141414";
+
+      entrada [label="entrada/\n*.json"];
+      salida  [label="salida/\n*.parquet · ~190 KB"];
+    }
+
+    lambda [label="AWS Lambda\nbootcamp-<sufijo>-etl\npython3.12 · 512 MB · 60 s",
+            fillcolor="#C8102E", fontcolor="#FFFFFF", color="#C8102E", penwidth=2];
+
+    layer  [label="Layer AWS SDK for pandas\n(PyArrow · publicada por AWS)",
+            shape=component];
+
+    rol    [label="IAM · bootcamp-<sufijo>-etl-rol\nGetObject entrada/* · PutObject salida/*\nlogs: solo su log group",
+            shape=box];
+
+    logs   [label="CloudWatch Logs\n/aws/lambda/bootcamp-<sufijo>-etl\nretención 3 días",
+            shape=cylinder];
+
+    almacen [label="Almacenamiento interno\nde Lambda (código)", shape=cylinder,
+             style="dashed,filled", fillcolor="#FFFFFF", color="#888888",
+             fontcolor="#555555"];
+  }
+
+  // ---------- Flujo de datos (tiempo de ejecución) ----------
+  muestra -> entrada  [label="1 · aws s3 cp", penwidth=1.5];
+  entrada -> lambda   [label="2 · evento ObjectCreated\nprefijo entrada/ · sufijo .json",
+                       penwidth=1.5, color="#C8102E", fontcolor="#C8102E"];
+  lambda  -> salida   [label="3 · JSON → Parquet", penwidth=1.5];
+  lambda  -> logs     [label="4 · «Evento recibido»\n«Parquet escrito»"];
+
+  // ---------- Permisos y configuración ----------
+  rol   -> lambda [style=dashed, arrowhead=onormal, label="asume el rol"];
+  layer -> lambda [style=dashed, arrowhead=onormal, label="aporta PyArrow"];
+
+  // ---------- Despliegue (apply) ----------
+  terraform -> handler [style=dotted, arrowhead=vee, label="comprime"];
+  handler   -> almacen [style=dotted, arrowhead=vee,
+                        label="apply: envío directo a la API\n(no pasa por S3)"];
+  almacen   -> lambda  [style=dotted, arrowhead=vee, label="código"];
+
+  // Orden visual: local a la izquierda, AWS a la derecha
+  { rank=same; muestra; terraform; handler; }
+  { rank=same; rol; layer; almacen; }
+}

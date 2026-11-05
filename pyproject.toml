@@ -1,0 +1,26 @@
+# Herramientas del ponente (pruebas previas). Los participantes NO necesitan
+# Python: Terraform empaqueta la Lambda y la layer gestionada aporta PyArrow.
+[project]
+name = "bootcamp-aws-s1-lab1"
+version = "0.1.0"
+requires-python = "==3.12.*"   # igual que el runtime de la Lambda
+dependencies = [
+    "boto3==1.35.49",    # tests/aws: validación de recursos desplegados
+    "pyarrow==23.0.1",   # probar el handler en local
+]
+
+[dependency-groups]
+dev = [
+    "pytest==9.0.3",
+    "ruff==0.15.12",
+]
+
+[tool.pytest.ini_options]
+# Por defecto solo pruebas locales; las de AWS con: uv run pytest -m cloud
+addopts = '-m "not cloud"'
+markers = [
+    "cloud: pruebas contra el pipeline desplegado (requieren credenciales y terraform apply)",
+]
+
+[tool.uv]
+package = false

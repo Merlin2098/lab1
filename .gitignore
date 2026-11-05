@@ -1,0 +1,67 @@
+# =========================
+# Python (herramientas del ponente)
+# =========================
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+# Muestras generadas por scripts/generar_muestra.py (la versionada es datos/muestra.json)
+datos/muestra_*.json
+
+# =========================
+# Terraform
+# =========================
+.terraform/
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+
+# Logs locales de pruebas (pueden contener IDs de cuenta y ARNs)
+logs/
+*.log
+backend.tf
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+# zip de la Lambda generado por archive_file
+build/
+# .terraform.lock.hcl SÍ se versiona (versiones de provider fijadas)
+
+# Variables con valores personales (sufijo, perfil)
+*.tfvars
+*.auto.tfvars
+!*.example
+
+# =========================
+# Credenciales: nunca en el repo
+# =========================
+.env
+.env.*
+!.env.credentials.example
+# CSV de access keys que descarga la consola de IAM
+*accessKeys*.csv
+credentials
+
+# =========================
+# Salidas de pruebas locales
+# =========================
+salida.json
+evento-mio.json
+*.parquet
+
+# =========================
+# Editor y SO
+# =========================
+.vscode/*
+!.vscode/settings.json
+.DS_Store
+Thumbs.db
+
+# =========================
+# Claude Code
+# =========================
+.claude/settings.local.json

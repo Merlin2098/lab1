@@ -1,0 +1,20 @@
+# Backend remoto en S3 — SOLO referencia (anexo S61). El laboratorio usa
+# backend local: no renombrar este archivo durante la sesión.
+#
+# Para activarlo en otro proyecto: copiarlo como `backend.tf` dentro de la
+# raíz de Terraform (gitignored) y ejecutar `terraform init` para migrar el state.
+#
+# Requisitos:
+#   - Terraform >= 1.10 y provider AWS >= 5.81 (confirmar, gate G12)
+#   - El bucket del state existe ANTES, con versionado y sin force_destroy
+#   - El bloqueo usa `use_lockfile` (objeto .tflock en S3); DynamoDB ya no hace falta
+
+terraform {
+  backend "s3" {
+    bucket       = "<bucket-del-state>"
+    key          = "bootcamp/terraform.tfstate"
+    region       = "<región>"
+    encrypt      = true
+    use_lockfile = true
+  }
+}
