@@ -7,20 +7,20 @@ Vas a desplegar con Terraform un pipeline que reacciona a eventos. Subes un
 archivo JSON a S3 y una función Lambda lo convierte en Parquet **sola**, sin
 que nadie la invoque.
 
-```text
-datos/muestra.json
-   │  aws s3 cp
-   ▼
-S3 · bootcamp-<sufijo>-datos/entrada/
-   │  evento ObjectCreated (solo entrada/*.json)
-   ▼
-Lambda · bootcamp-<sufijo>-etl   ──►  CloudWatch Logs · /aws/lambda/bootcamp-<sufijo>-etl
-   │  JSON → Parquet
-   ▼
-S3 · bootcamp-<sufijo>-datos/salida/muestra.parquet
-```
+![Arquitectura del laboratorio 1: datos/muestra.json se sube a S3 (entrada/), el evento ObjectCreated dispara la Lambda, que escribe el Parquet en salida/ y sus logs en CloudWatch](docs/architecture/architecture.png)
+
+Versión en texto (Graphviz): [docs/architecture/architecture.dot](docs/architecture/architecture.dot).
 
 No vas a escribir código: vas a **leerlo y ejecutarlo**.
+
+---
+
+## Presentación de la sesión
+
+Las diapositivas de la sesión 1 (conceptos de AWS, Terraform y el recorrido del
+laboratorio) están en
+[docs/ppt/Bootcamp-AWS-Sesion-1.pdf](docs/ppt/Bootcamp-AWS-Sesion-1.pdf) (PDF:
+se puede ver directamente en GitHub o en el navegador).
 
 ---
 
@@ -315,7 +315,7 @@ publicada por AWS. Tu función solo hace referencia a ella por su ARN (variable
 | `infra/modules/lambda/` | La función, su código (`src/handler.py`) y el disparador (`trigger.tf`) |
 | `datos/` | `muestra.json`: 20 000 ventas ficticias, el archivo que subes en el paso 4 |
 | `scripts/` | Herramientas del ponente: generar muestras, cargar credenciales y la prueba e2e |
-| `docs/` | `idea-base.md` (la idea del proyecto: público, objetivos, arquitectura y principios), el diagrama `architecture/architecture.dot` (Graphviz) y las decisiones de arquitectura ([`internal/adr/`](docs/internal/adr/README.md): Terraform modular, `force_destroy`, IAM, empaquetado, nombres, logs y credenciales) y los enlaces para preparar el equipo ([`resources/links.md`](docs/resources/links.md)) |
+| `docs/` | `idea-base.md` (la idea del proyecto: público, objetivos, arquitectura y principios), el diagrama `architecture/architecture.dot` (Graphviz) y las decisiones de arquitectura ([`internal/adr/`](docs/internal/adr/README.md): Terraform modular, `force_destroy`, IAM, empaquetado, nombres, logs y credenciales), los enlaces para preparar el equipo ([`resources/links.md`](docs/resources/links.md)) y la presentación de la sesión ([`ppt/`](docs/ppt/Bootcamp-AWS-Sesion-1.pdf), en PDF) |
 
 ---
 
