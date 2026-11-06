@@ -26,6 +26,10 @@ No vas a escribir código: vas a **leerlo y ejecutarlo**.
 
 ## Antes de empezar
 
+> **¿Aún no tienes las herramientas?** En
+> [docs/resources/links.md](docs/resources/links.md) están los enlaces de
+> descarga, tutoriales en video y el comando para comprobar cada instalación.
+
 Necesitas:
 
 - **Git Bash** (Windows; viene con Git for Windows) o la terminal de macOS/Linux.
@@ -82,6 +86,28 @@ Si da error, mira [Problemas frecuentes](#problemas-frecuentes).
 
 > **Importante:** las variables solo viven en **esa** terminal. Si abres otra
 > terminal (o la cierras), repite el paso 1.3.
+
+**1.5 (Calentamiento) Crea un bucket con la CLI y bórralo:**
+
+Antes de usar Terraform, crea un bucket "a mano" para ver que tus credenciales
+funcionan y que un bucket no es más que una llamada a la API de AWS.
+
+```bash
+BUCKET_CLI="bootcamp-cli-$(date +%s)"     # nombre único: los buckets son globales
+aws s3 mb "s3://$BUCKET_CLI" --region us-east-1
+aws s3 ls | grep bootcamp-cli
+```
+
+Debe responder `make_bucket: bootcamp-cli-…` y luego listarlo. Ahora bórralo
+para no dejar nada suelto:
+
+```bash
+aws s3 rb "s3://$BUCKET_CLI"
+aws s3 ls | grep bootcamp-cli             # ya no debe aparecer
+```
+
+> Este bucket **no** lo gestiona Terraform: si no lo borras tú, `terraform destroy`
+> no lo eliminará. Por eso el resto del laboratorio usa Terraform.
 
 ---
 
@@ -289,7 +315,7 @@ publicada por AWS. Tu función solo hace referencia a ella por su ARN (variable
 | `infra/modules/lambda/` | La función, su código (`src/handler.py`) y el disparador (`trigger.tf`) |
 | `datos/` | `muestra.json`: 20 000 ventas ficticias, el archivo que subes en el paso 4 |
 | `scripts/` | Herramientas del ponente: generar muestras, cargar credenciales y la prueba e2e |
-| `docs/` | `idea-base.md` (la idea del proyecto: público, objetivos, arquitectura y principios), el diagrama `architecture/architecture.dot` (Graphviz) y las decisiones de arquitectura ([`internal/adr/`](docs/internal/adr/README.md): Terraform modular, `force_destroy`, IAM, empaquetado, nombres, logs y credenciales) |
+| `docs/` | `idea-base.md` (la idea del proyecto: público, objetivos, arquitectura y principios), el diagrama `architecture/architecture.dot` (Graphviz) y las decisiones de arquitectura ([`internal/adr/`](docs/internal/adr/README.md): Terraform modular, `force_destroy`, IAM, empaquetado, nombres, logs y credenciales) y los enlaces para preparar el equipo ([`resources/links.md`](docs/resources/links.md)) |
 
 ---
 
